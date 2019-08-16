@@ -253,9 +253,18 @@ def main():
             LOGGER.error("No valid config item provided")
             return
 
+    nameservers = []
+    for section in CONFIG.sections():
+        try:
+            nameserver = CONFIG.get(section, "nameserver")
+        except NoOptionError:
+            nameserver = "localhost"
+        if nameserver not in nameservers:
+            nameservers.append(nameserver)
+
     decoder = get_metadata
 
-    PUB = publisher.NoisyPublisher("gatherer")
+    PUB = publisher.NoisyPublisher("gatherer", nameservers=nameservers)
 
     granule_triggers = setup(decoder)
 
